@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 
 from . import Base
 
+
 class Course(Base):
     __tablename__ = "courses"
 
@@ -10,3 +11,6 @@ class Course(Base):
     title = Column(Text, nullable=False)
 
     users = relationship("User", back_populates="course")
+
+    def __repr__(self):
+        return f"<Course title={self.title}>"

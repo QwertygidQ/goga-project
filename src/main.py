@@ -4,6 +4,7 @@ import sys
 import telegram
 import time
 
+
 def test_db():
     from database import session, User, Event
 
@@ -17,7 +18,8 @@ def test_db():
         u.events.append(e)
     session.commit()
 
-    print(*Event.upcoming_events(session, 2), sep='\n')
+    print(*Event.upcoming_events(session, 2), sep="\n")
+
 
 test_db()
 
