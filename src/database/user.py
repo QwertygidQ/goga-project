@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, Boolean, text
+from sqlalchemy import Column, Integer, Boolean
+from sqlalchemy.orm import relationship
 
 from . import Base
 
@@ -12,6 +13,8 @@ class User(Base):
     can_invite_admins = Column(Boolean, nullable=False, default=False)
     can_invite_posters = Column(Boolean, nullable=False, default=False)
     can_invite_students = Column(Boolean, nullable=False, default=False)
+
+    events = relationship('Event', back_populates="recipient")
 
     def __repr__(self):
         return f"<User tg_id={self.telegram_id}\
