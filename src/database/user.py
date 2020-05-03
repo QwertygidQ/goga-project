@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
 from . import Base
+from . import user_to_event
 
 class User(Base):
     __tablename__ = "users"
