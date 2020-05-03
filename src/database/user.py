@@ -1,8 +1,7 @@
-from sqlalchemy import Column, Integer, Boolean
+from sqlalchemy import Column, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
 from . import Base
-from .many_to_many import course_to_user
 
 class User(Base):
     __tablename__ = "users"
@@ -17,7 +16,9 @@ class User(Base):
     can_invite_students = Column(Boolean, nullable=False, default=False)
 
     events = relationship('Event', back_populates="recipient")
-    courses = relationship("Course", secondary=course_to_user, back_populates="users")
+
+    course_id = Column(Integer, ForeignKey("courses.id"))
+    course = relationship("Course", back_populates="users")
 
     def __repr__(self):
         return f"<User tg_id={self.telegram_id}\
