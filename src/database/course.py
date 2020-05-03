@@ -1,16 +1,11 @@
-from sqlalchemy import Column, Integer, Table, ForeignKey
+from sqlalchemy import Column, Integer
 from sqlalchemy.orm import relationship
-from . import Base
 
-course_to_user = Table(
-    "course_to_user",
-    Base.metadata,
-    Column("course_id", Integer, ForeignKey("course.id")),
-    Column("user_id", Integer, ForeignKey("user.id"))
-)
+from . import Base
+from .many_to_many import course_to_user
 
 class Course(Base):
     __tablename__ = "courses"
 
     id = Column(Integer, nullable=False, primary_key=True)
-    users = relationship("User", secondary=course_to_user)
+    users = relationship("User", secondary=course_to_user, back_populates="courses")
