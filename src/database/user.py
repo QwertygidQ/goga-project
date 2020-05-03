@@ -10,6 +10,7 @@ class User(Base):
     telegram_id = Column(Integer, nullable=False)
 
     can_post = Column(Boolean, nullable=False, default=False)
+    can_create_subgroups = Column(Boolean, nullable=False, default=False)
     can_invite_admins = Column(Boolean, nullable=False, default=False)
     can_invite_posters = Column(Boolean, nullable=False, default=False)
     can_invite_students = Column(Boolean, nullable=False, default=False)
