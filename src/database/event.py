@@ -1,4 +1,3 @@
-import enum
 from sqlalchemy import (
     Column,
     Integer,
