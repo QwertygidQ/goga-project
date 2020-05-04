@@ -8,6 +8,7 @@ from ..database import (
     add_to_database,
 )
 from telegram.ext import CommandHandler
+from .exc import UserNotFound
 
 
 def create_group(update, context):
@@ -19,10 +20,7 @@ def create_group(update, context):
     with thread_local_session() as session:
         user = session.query(User).filter_by(tg_id=tg_id).first()
         if user is None:
-            return reply(
-                "Пользователь не найден в системе. "
-                "Попробуйте воспользоваться командой '/start'."
-            )
+            raise UserNotFound()
 
         if context.args is None or context.args == []:
             return reply("Название группы не может быть пустым.")
