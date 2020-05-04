@@ -14,7 +14,7 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 from . import Base, engine as alchemy_engine, Session
 from .many_to_many import user_to_event
-from logging import info
+from logging import info, error
 import threading
 
 ScopedSessionMaker = scoped_session(Session)
@@ -27,7 +27,11 @@ sched.start()
 
 def execute_event(id):
     sess = ScopedSessionMaker()
-    sess.query(Event).filter_by(id=id).first().execute()
+    ev = sess.query(Event).filter_by(id=id).first()
+    if ev is not None:
+        ev.execute()
+    else:
+        error(f"event #{id} not found in db")
     ScopedSessionMaker.remove()
 
 class Event(Base):
