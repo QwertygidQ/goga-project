@@ -29,9 +29,12 @@ dispatcher.add_handler(start_handler)
 
 # REGISTER USER
 def join(update, context):
-    token = context.args
-    context.bot.send_message(chat_id=update.effective_chat.id, text="registering you with token:{}...")
-    #db_register_user(token, update.effective_chat.id)
+    try: token = context.args[0]
+    except:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Fuck you! Your token is bullshit!")
+        return
+    context.bot.send_message(chat_id=update.effective_chat.id, text="registering you with token:{}...".format(token))
+    reg_result = "ok"#db_register_user(token, update.effective_chat.id)
 
 register_handler = CommandHandler("join", join)
 dispatcher.add_handler(register_handler)
