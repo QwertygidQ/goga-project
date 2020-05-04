@@ -4,12 +4,12 @@ from .permissions import SaIntFlagType, Perm
 from sqlalchemy import Column, Integer, Text, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.exc import DatabaseError
-from itsdangerous.serializer import BadSignature
 from sqlalchemy.orm.session import Session as SessionGetter
 
 
 class PermissionError(RuntimeError):
     pass
+
 
 def _add_to_database(obj: object, session) -> bool:
     try:
@@ -51,9 +51,7 @@ class User(Base):
 
     groups = relationship("Permission", back_populates="user")
 
-    def create_invitation(
-        self, invitee_tg_id: int, invitee_permissions: Perm, group: Group
-    ) -> str:
+    def create_invitation(self, invitee_permissions: Perm, group: Group) -> str:
         session = SessionGetter.object_session(self)
         permissions = (
             session.query(Permission)
@@ -63,21 +61,22 @@ class User(Base):
 
         if invitee_permissions & Perm.post and not permissions & Perm.invite_posters:
             raise PermissionError("This user is not allowed to invite posters")
-        if not invitee_permissions & Perm.post and not permissions & Perm.invite_students:
+        if (
+            not invitee_permissions & Perm.post
+            and not permissions & Perm.invite_students
+        ):
             raise PermissionError("This user is not allowed to invite students")
 
         return serializer.dumps(
-            {
-                "group_id": group.id,
-                "permissions": invitee_permissions,
-            }
+            {"group_id": group.id, "permissions": invitee_permissions,}
         )
 
     def accept_invite(self, invitation: str):
-        try:
-            user_info = serializer.loads(invitation)
-        except BadSignature:
-            raise RuntimeError("Invalid signature for the invitation")
+        """
+        Raises BadSignature (itsdangerous) and MultipleResultsFound (SQLAlchemy)
+        """
+
+        user_info = serializer.loads(invitation)
 
         if "group_id" not in user_info or type(user_info["group_id"]) != int:
             raise RuntimeError(
@@ -88,9 +87,8 @@ class User(Base):
         session = SessionGetter.object_session(self)
         group = session.Query(Group).get(user_info["group_id"]).one()
 
-        if (
-            "permissions" not in user_info
-            or not isinstance(user_info["permissions"], Perm)
+        if "permissions" not in user_info or not isinstance(
+            user_info["permissions"], Perm
         ):
             raise RuntimeError(
                 "Invalid invitation payload: 'permissions' is not\
@@ -98,11 +96,7 @@ class User(Base):
                     not exist"
             )
 
-        permission = Permission(
-            group=group,
-            user=self,
-            perm=user_info["permissions"]
-        )
+        permission = Permission(group=group, user=self, perm=user_info["permissions"])
 
         if not _add_to_database(permission, session):
             raise RuntimeError("Failed to add the permission to the database")

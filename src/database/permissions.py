@@ -1,6 +1,7 @@
 from enum import IntFlag
 import sqlalchemy as sa
 
+
 class SaIntFlagType(sa.types.TypeDecorator):
     impl = sa.Integer
 
@@ -13,6 +14,7 @@ class SaIntFlagType(sa.types.TypeDecorator):
 
     def process_result_value(self, value, dialect):
         return self._intflagtype(value)
+
 
 class Perm(IntFlag):
     post = 1
