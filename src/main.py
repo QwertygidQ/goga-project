@@ -32,8 +32,6 @@ def test_db():
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-os.environ["TG_BOT_TOKEN"]="1177401560:AAE6dkkiMglMq4XZ1UUVj16B9wytwL0ZmjA"
-
 if "TG_BOT_TOKEN" not in os.environ:
     logger.critical("No TG_BOT_TOKEN environment variable found")
     sys.exit(1)
