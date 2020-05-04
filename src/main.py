@@ -4,6 +4,9 @@ import sys
 import telegram
 import time
 
+logger = logging.getLogger()
+logger.setLevel(level=os.environ.get("LOGLEVEL", "ERROR").upper())
+
 
 def test_db():
     from database import session, User, Event
@@ -23,8 +26,6 @@ def test_db():
 
 test_db()
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 if "TG_BOT_TOKEN" not in os.environ:
     logger.critical("No TG_BOT_TOKEN environment variable found")
