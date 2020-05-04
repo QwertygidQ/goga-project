@@ -127,11 +127,11 @@ def ask_token_type(update, context):
 
 def handle_token_type(update, context):
     user_id: int = update.effective_chat.id
-    token_type: str = update.message.text
+    token_type: str = context.args[0]
     match: Dict[str, Tuple[int, int, int, int, int]] = {
-        "админ": admin,
-        "преподаватель": teacher,
-        "ученик": student,
+        "admin": admin,
+        "teacher": teacher,
+        "pupil": student,
     }
     if token_type in match.keys():
         new_token_records[user_id]["perm"] = match[token_type]
@@ -156,7 +156,7 @@ def all_admined_courses(user_id: int) -> List[str]:
 
 def handle_tk_group(update, context):
     user_id = update.effective_chat.id
-    group = update.message.text
+    group = context.args[0]
 
     if group in all_admined_courses(user_id):
         token = secrets.token_hex(18)
@@ -179,6 +179,8 @@ token_progress = [ask_token_type, handle_token_type, handle_tk_group]
 
 def handle_token_dialog(update, context):
     user_id = update.effective_chat.id
+    context.bot.send_message(chat_id=user_id, text=new_token_records[user_id])
+    context.bot.send_message(chat_id=user_id, text=context.args)
     token_progress[new_token_records[user_id]["step"]](update, context)
 
 
