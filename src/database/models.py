@@ -17,7 +17,7 @@ class Permission(Base):
 
     @property
     def permissions(self):
-        return BindedPermissions(self, 'permissions_bits')
+        return BindedPermissions(self, "permissions_bits")
 
 
 class Group(Base):
@@ -36,4 +36,3 @@ class User(Base):
     tg_id = Column(Integer, nullable=False, unique=True)
 
     groups = relationship("Permission", back_populates="user")
-

@@ -5,6 +5,8 @@ from os import environ
 logger = logging.getLogger()
 logger.setLevel(level=environ.get("LOGLEVEL", "ERROR").upper())
 
+database_path = "sqlite:///db.sqlite"  # = "postgres://172.24.24.21"
+
 if "TG_BOT_TOKEN" not in environ:
     logger.critical("No TG_BOT_TOKEN environment variable found")
     sys.exit(1)
