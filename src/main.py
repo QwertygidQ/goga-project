@@ -102,6 +102,7 @@ def ask_token_type(update, context):
     user_id = update.effective_chat.id
     match = (admin, teacher, student)
     can_give = can_give_tokens(user_id)
+    context.bot.send_message(chat_id=user_id, text=f"{can_give}")
     if sum(can_give) == 1:
         new_token_records[user_id]["perm"] = match[can_give.index(True)]
         new_token_records[user_id]["step"] += 2
@@ -169,7 +170,7 @@ token_progress = [ask_token_type, handle_token_type, handle_tk_group]
 
 def handle_token_dialog(update, context):
     user_id = update.effective_chat.id
-    context.bot.send_message(chat_id=user_id, text=str(token_progress[new_token_records[user_id]["step"]]))
+    context.bot.send_message(chat_id=user_id, text=new_token_records[user_id]["step"])
     token_progress[new_token_records[user_id]["step"]](update, context)
 
 
