@@ -79,8 +79,7 @@ class User(Base):
 
         if "group_id" not in user_info or type(user_info["group_id"]) != int:
             raise RuntimeError(
-                "Invalid invitation payload: 'group_id' is not an 'int'\
-                    or does not exist"
+                "Invalid invitation payload: 'group_id' is not an 'int' or does not exist"
             )
 
         session = SessionGetter.object_session(self)
@@ -90,12 +89,13 @@ class User(Base):
             user_info["permissions"], Perm
         ):
             raise RuntimeError(
-                "Invalid invitation payload: 'permissions' is not\
-                    an instance of 'BindedPermissions' or does\
-                    not exist"
+                (
+                    "Invalid invitation payload: 'permissions' is not an instance of "
+                    "'BindedPermissions' or does not exist"
+                )
             )
 
         permission = Permission(group=group, user=self, perm=user_info["permissions"])
 
-        if not add_to_database(permission, session):
+        if not add_to_database([permission], session):
             raise RuntimeError("Failed to add the permission to the database")

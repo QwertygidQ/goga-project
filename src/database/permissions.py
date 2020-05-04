@@ -18,7 +18,9 @@ class SaIntFlagType(sa.types.TypeDecorator):
 
 class Perm(IntFlag):
     post = 1
-    create_subgroups = 2
-    invite_admins = 4
-    invite_posters = 8
-    invite_students = 16
+    invite_posters = 2
+    invite_students = 4
+
+    @staticmethod
+    def all():
+        return Perm.post | Perm.invite_posters | Perm.invite_students

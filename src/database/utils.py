@@ -1,6 +1,11 @@
-def add_to_database(obj: object, session) -> bool:
+from typing import List
+
+
+def add_to_database(obj_list: List[object], session) -> bool:
     try:
-        session.add(obj)
+        for obj in obj_list:
+            session.add(obj)
+
         session.commit()
     except DatabaseError:
         session.rollback()

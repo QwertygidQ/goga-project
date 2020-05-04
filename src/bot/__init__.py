@@ -6,5 +6,6 @@ dispatcher = updater.dispatcher
 
 from .helloworld import *
 from .start import *
+from .create_group import *
 
 updater.start_polling()
