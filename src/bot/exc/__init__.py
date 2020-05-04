@@ -9,7 +9,7 @@ class BotErrorHandler(RuntimeError):
         raise NotImplementedError('Do not use BotErrorHandler directly')
 
 
-class UserNotFound(BotErrorHandler):
+class EffectiveUserNotFound(BotErrorHandler):
     def teardown(self, update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text=(
             "Чтобы начать пользоваться ботом, отправьте /start"
