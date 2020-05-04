@@ -85,7 +85,7 @@ def check_token_presence(token: str) -> bool:
 
 def get_token_permissions(token: str) -> Tuple[str, Tuple[int, int, int, int, int]]:
     token_record: Token = session.query(Token).filter_by(token=token).first()
-    return(token_record.course, (token_record.can_post,
+    return (token_record.course.title, (token_record.can_post,
                                  token_record.can_create_subgroups,
                                  token_record.can_invite_admins,
                                  token_record.can_invite_posters,
