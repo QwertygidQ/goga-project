@@ -22,13 +22,13 @@ def start(update, context):
             chat_id=update.effective_chat.id,
             text="Не удалось зарегистрировать нового пользователя. Попробуйте воспользоваться командой '/start' еще раз, или обратитесь к администратору.",
         )
-        log.warn(f'could not add user tg_id={tg_id}')
+        log.warn(f"could not add user tg_id={tg_id}")
     else:
         context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="Новый пользователь успешно добавлен в систему!",
         )
-        log.info(f'register user tg_id={tg_id}')
+        log.info(f"register user tg_id={tg_id}")
 
     Session.remove()
 

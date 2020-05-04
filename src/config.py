@@ -4,11 +4,11 @@ import coloredlogs
 from os import environ
 
 
-logger = logging.getLogger('goga')
+logger = logging.getLogger("goga")
 coloredlogs.install(
     level=environ.get("LOGLEVEL", "WARN").upper(),
     logger=logger,
-    fmt='[ %(asctime)s.%(msecs)03d ] %(levelname)-7s %(message)s'
+    fmt="[ %(asctime)s.%(msecs)03d ] %(levelname)-7s %(message)s",
 )
 
 database_path = "sqlite:///db.sqlite"  # = "postgres://172.24.24.21"

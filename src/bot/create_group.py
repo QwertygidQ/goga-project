@@ -1,5 +1,12 @@
 from . import dispatcher
-from ..database import thread_local_session, User, Group, Permission, Perm, add_to_database
+from ..database import (
+    thread_local_session,
+    User,
+    Group,
+    Permission,
+    Perm,
+    add_to_database,
+)
 from telegram.ext import CommandHandler
 
 
@@ -29,13 +36,14 @@ def create_group(update, context):
         perm = Permission(group=group, user=user, perm=Perm.all())
 
         if not add_to_database([group, perm], session):
-            return reply(
+            return (
+                reply(
                     "Не удалось создать группу. Попробуйте еще "
                     "раз или обратитесь к администратору."
                 ),
+            )
         else:
             return reply("Группа успешно создана!")
-
 
 
 create_group_handler = CommandHandler("create_group", create_group)
