@@ -11,6 +11,12 @@ from sqlalchemy.orm.session import Session as SessionGetter
 class PermissionError(RuntimeError):
     pass
 
+class AlreadyJoinedError(RuntimeError):
+    pass
+
+class NonexistantGroup(RuntimeError):
+    pass
+
 
 class Permission(Base):
     __tablename__ = "permissions"
@@ -76,30 +82,40 @@ class User(Base):
 
     def accept_invite(self, invitation: str):
         """
-        Raises BadSignature (itsdangerous) and MultipleResultsFound (SQLAlchemy)
+        Raises BadSignature (itsdangerous), AlreadyJoinedError, NonexistantGroup and RuntimeError
         """
 
         user_info = serializer.loads(invitation)
 
-        if "group_id" not in user_info or type(user_info["group_id"]) != int:
+        if not isinstance(user_info, dict) or "group_id" not in user_info or type(user_info["group_id"]) != int:
             raise RuntimeError(
                 "Invalid invitation payload: 'group_id' is not an 'int' or does not exist"
             )
 
         session = SessionGetter.object_session(self)
-        group = session.Query(Group).get(user_info["group_id"]).one()
+        group = session.query(Group).get(user_info["group_id"])
+        if group is None:
+            raise NonexistantGroup("Group does not exist")
 
         if "permissions" not in user_info or not isinstance(
-            user_info["permissions"], Perm
+            user_info["permissions"], int  # TODO: actually use Perm
         ):
             raise RuntimeError(
                 (
                     "Invalid invitation payload: 'permissions' is not an instance of "
-                    "'BindedPermissions' or does not exist"
+                    "'Perm' or does not exist"
                 )
             )
+
+        permissions = session.query(Permission).get(
+            {"user_id": self.id, "group_id": group.id}
+        )
+        if permissions is not None:
+            raise AlreadyJoinedError("User has already joined this group")
 
         permission = Permission(group=group, user=self, perm=user_info["permissions"])
 
         if not add_to_database([permission], session):
             raise RuntimeError("Failed to add the permission to the database")
+
+        return group

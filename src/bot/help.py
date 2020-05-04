@@ -1,0 +1,17 @@
+from . import dispatcher
+from telegram.ext import CommandHandler
+
+
+def help(update, context):
+    help_text = (
+        "/help -- показывает все команды\n"
+        "/start -- регистрирует пользователя в системе\n"
+        "/create_group [название группы] -- создает новую группу\n"
+        "/invite [название группы] -- создает новый инвайт в группу"
+    )
+
+    context.bot.send_message(chat_id=update.effective_chat.id, text=help_text)
+
+
+help_handler = CommandHandler("help", help)
+dispatcher.add_handler(help_handler)

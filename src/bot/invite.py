@@ -105,7 +105,7 @@ def invite_permissions(update, context):
         invitee_perm |= perm_map[perm]
 
     try:
-        invitation = user.create_invitation(invitee_perm, group)
+        invitation = user.create_invitation(Perm(invitee_perm), group)
     except PermissionError:
         context.bot.send_message(
             chat_id=update.effective_chat.id,

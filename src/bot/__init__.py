@@ -4,10 +4,11 @@ from telegram.ext import Updater
 updater = Updater(token=bot_token, use_context=True)
 dispatcher = updater.dispatcher
 
-from .helloworld import *
+from .help import *
 from .start import *
 from .create_group import *
 from .invite import *
+from .join import *
 
 from .exc import *
 
