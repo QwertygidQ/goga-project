@@ -8,5 +8,7 @@ from .helloworld import *
 from .start import *
 from .create_group import *
 
+from .exc import *
+
 log.info('start polling...')
 updater.start_polling()
