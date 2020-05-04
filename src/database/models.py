@@ -55,14 +55,16 @@ class User(Base):
         permissions = (
             session.query(Permission)
             .get({"user_id": self.id, "group_id": group.id})
-            .one()
         )
 
-        if invitee_permissions & Perm.post and not permissions & Perm.invite_posters:
+        if permissions is None:
+            raise ValueError("User-group permission does not exist")
+
+        if invitee_permissions & Perm.post and not permissions.perm & Perm.invite_posters:
             raise PermissionError("This user is not allowed to invite posters")
         if (
             not invitee_permissions & Perm.post
-            and not permissions & Perm.invite_students
+            and not permissions.perm & Perm.invite_students
         ):
             raise PermissionError("This user is not allowed to invite students")
 

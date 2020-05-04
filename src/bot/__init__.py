@@ -7,6 +7,7 @@ dispatcher = updater.dispatcher
 from .helloworld import *
 from .start import *
 from .create_group import *
+from .invite import *
 
 from .exc import *
 
