@@ -1,4 +1,4 @@
-from ..config import bot_token
+from ..config import bot_token, logger as log
 from telegram.ext import Updater
 
 updater = Updater(token=bot_token, use_context=True)
@@ -8,4 +8,5 @@ from .helloworld import *
 from .start import *
 from .create_group import *
 
+log.info('start polling...')
 updater.start_polling()
