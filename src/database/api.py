@@ -2,7 +2,7 @@ from typing import Tuple, List
 import itertools
 
 from sqlalchemy.exc import DatabaseError
-from . import session, User, Course
+from . import session, User, Course, Token
 
 
 def add_to_database(obj) -> bool:
@@ -50,3 +50,27 @@ def add_user(
     user.can_invite_students = permissions[4]
 
     return add_to_database(user)
+
+
+def add_token(
+    token: str, permissions: Tuple[int, int, int, int, int], course: Course
+) -> bool:
+    found = session.Query(Token).filter_by(token=token).first()
+    if found is not None:
+        return False
+
+    token = Token(
+        token=token,
+        can_post=permissions[0],
+        can_create_subgroups=permissions[1],
+        can_invite_admins=permissions[2],
+        can_invite_posters=permissions[3],
+        can_invite_students=permissions[4],
+        course=course,
+    )
+
+    return add_to_database(token)
+
+
+def get_token(token: str) -> Token:
+    return session.Query(Token).filter_by(token=token).first()
