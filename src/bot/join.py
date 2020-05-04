@@ -9,7 +9,7 @@ from ..database import (
     add_to_database,
     AlreadyJoinedError,
     NonexistantGroup,
-    BadInvitation
+    BadInvitation,
 )
 from telegram.ext import CommandHandler
 from itsdangerous.exc import BadSignature

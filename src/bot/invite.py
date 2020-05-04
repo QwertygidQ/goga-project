@@ -17,8 +17,7 @@ from ..config import logger as log
 def invite_entry(update, context):
     def reply(msg):
         context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=msg,
+            chat_id=update.effective_chat.id, text=msg,
         )
 
     with thread_local_session() as session:
@@ -55,8 +54,7 @@ def invite_entry(update, context):
 def invite_permissions(update, context):
     def reply(msg):
         context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=msg,
+            chat_id=update.effective_chat.id, text=msg,
         )
 
     with thread_local_session() as session:

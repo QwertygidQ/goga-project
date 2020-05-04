@@ -14,11 +14,14 @@ from itsdangerous import BadSignature
 class PermissionError(RuntimeError):
     pass
 
+
 class AlreadyJoinedError(RuntimeError):
     pass
 
+
 class NonexistantGroup(RuntimeError):
     pass
+
 
 class BadInvitation(RuntimeError):
     pass
@@ -64,15 +67,17 @@ class User(Base):
 
     def create_invitation(self, invitee_permissions: Perm, group: Group) -> str:
         session = SessionGetter.object_session(self)
-        permissions = (
-            session.query(Permission)
-            .get({"user_id": self.id, "group_id": group.id})
+        permissions = session.query(Permission).get(
+            {"user_id": self.id, "group_id": group.id}
         )
 
         if permissions is None:
             raise ValueError("User-group permission does not exist")
 
-        if invitee_permissions & Perm.post and not permissions.perm & Perm.invite_posters:
+        if (
+            invitee_permissions & Perm.post
+            and not permissions.perm & Perm.invite_posters
+        ):
             raise PermissionError("This user is not allowed to invite posters")
         if (
             not invitee_permissions & Perm.post
@@ -80,20 +85,28 @@ class User(Base):
         ):
             raise PermissionError("This user is not allowed to invite students")
 
-        return b64encode(serializer.dumps(
-            {"group_id": group.id, "permissions": invitee_permissions,}
-        ).encode('utf-8')).decode('utf-8')
+        return b64encode(
+            serializer.dumps(
+                {"group_id": group.id, "permissions": invitee_permissions,}
+            ).encode("utf-8")
+        ).decode("utf-8")
 
     def accept_invite(self, invitation: str):
         """
         Raises BadInvitation and MultipleResultsFound (SQLAlchemy)
         """
         try:
-            user_info = serializer.loads(b64decode(invitation.encode('utf-8')).decode('utf-8'))
+            user_info = serializer.loads(
+                b64decode(invitation.encode("utf-8")).decode("utf-8")
+            )
         except (BadSignature, Base64DecodeError, UnicodeDecodeError):
             raise BadInvitation()
 
-        if not isinstance(user_info, dict) or "group_id" not in user_info or type(user_info["group_id"]) != int:
+        if (
+            not isinstance(user_info, dict)
+            or "group_id" not in user_info
+            or type(user_info["group_id"]) != int
+        ):
             raise RuntimeError(
                 "Invalid invitation payload: 'group_id' is not an 'int' or does not exist"
             )
@@ -119,7 +132,9 @@ class User(Base):
         if permissions is not None:
             raise AlreadyJoinedError("User has already joined this group")
 
-        permission = Permission(group=group, user=self, perm=Perm(user_info["permissions"]))
+        permission = Permission(
+            group=group, user=self, perm=Perm(user_info["permissions"])
+        )
 
         if not add_to_database([permission], session):
             raise RuntimeError("Failed to add the permission to the database")
@@ -133,7 +148,7 @@ class Notification(Base):
     id = Column(Integer, primary_key=True)
     body = Column(Text, nullable=False)
 
-    #users = relationship("User", back_populates="group")
+    # users = relationship("User", back_populates="group")
 
     def __repr__(self) -> str:
         return f"<Notification {self.id} users: {len(self.users)}>"
