@@ -1,5 +1,5 @@
 from . import Base
-from .permissions import BindedPermissions
+from .permissions import SaIntFlagType, Perm
 from sqlalchemy import Column, Integer, Text, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
@@ -10,14 +10,10 @@ class Permission(Base):
     user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     group_id = Column(Integer, ForeignKey("groups.id"), primary_key=True)
 
-    permissions_bits = Column(Integer, default=0)
-
     group = relationship("Group", back_populates="users")
     user = relationship("User", back_populates="groups")
 
-    @property
-    def permissions(self):
-        return BindedPermissions(self, "permissions_bits")
+    perm = Column(SaIntFlagType(Perm), default=0)
 
 
 class Group(Base):

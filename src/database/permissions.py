@@ -1,90 +1,22 @@
-_perm_names: list = [
-    "post",
-    "create_subgroups",
-    "invite_admins",
-    "invite_posters",
-    "invite_students",
-]
+from enum import IntFlag
+import sqlalchemy as sa
 
+class SaIntFlagType(sa.types.TypeDecorator):
+    impl = sa.Integer
 
-class PermissionsBase:
-    def _get_mapped(self):
-        raise NotImplementedError()
+    def __init__(self, intflagtype, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._intflagtype = intflagtype
 
-    def _set_mapped(self):
-        raise NotImplementedError()
+    def process_bind_param(self, value, dialect):
+        return value.value
 
-    def enable(self, *args):
-        """
-        Enable all permissions from args
+    def process_result_value(self, value, dialect):
+        return self._intflagtype(value)
 
-        >>> permissions.enable('post', 'create_subgroups')
-        """
-        for perm in args:
-            if perm in _perm_names:
-                self._set_mapped(self._get_mapped() | (1 << _perm_names.index(perm)))
-            else:
-                raise ValueError(f"{perm} is not valid permission")
-
-    def is_enabled(self, *args) -> bool:
-        """
-        Check that all of permissions from args are enabled
-        """
-        res = True
-        for perm in args:
-            if perm in _perm_names:
-                res &= bool(self._get_mapped() & (1 << _perm_names.index(perm)))
-            else:
-                raise ValueError(f"{perm} is not valid permission")
-        return res
-
-    def disable(self, *args):
-        """
-        Disable all permissions from args
-        """
-        for perm in args:
-            if perm in _perm_names:
-                self._set_mapped(self._get_mapped() & (~(1 << _perm_names.index(perm))))
-
-    def enable_from(self, perms):
-        self.set_mapped(self._get_mapped() | perms._get_mapped())
-
-    def clear(self):
-        """
-        Disable all permissions
-        """
-        self._set_mapped(0)
-
-    def __int__(self):
-        return self._get_mapped()
-
-    def __repr__(self) -> str:
-        return " ".join(
-            perm
-            for off, perm in enumerate(_perm_names)
-            if (self._get_mapped() & (1 << off))
-        )
-
-
-class BindedPermissions(PermissionsBase):
-    def __init__(self, mapping, attr_name):
-        self.mapping = mapping
-        self.attr_name = attr_name
-
-    def _get_mapped(self):
-        return getattr(self.mapping, self.attr_name)
-
-    def _set_mapped(self, val):
-        setattr(self.mapping, self.attr_name, val)
-
-
-class UnbindedPermissions(PermissionsBase):
-    def __init__(self, *args):
-        self.mask = 0
-        self.enable(*args)
-
-    def _get_mapped(self):
-        return self.mask
-
-    def _set_mapped(self, val):
-        self.mask = val
+class Perm(IntFlag):
+    post = 1
+    create_subgroups = 2
+    invite_admins = 4
+    invite_posters = 8
+    invite_students = 16
