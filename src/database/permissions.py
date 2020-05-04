@@ -36,7 +36,7 @@ class PermissionsBase:
             else:
                 raise ValueError(f'{perm} is not valid permission')
         return res
-    
+
     def disable(self, *args):
         '''
         Disable all permissions from args
@@ -47,15 +47,15 @@ class PermissionsBase:
                     self._get_mapped() & (~(1 << _perm_names.index(perm)))
                 )
 
-    def enable_from(self, perms: PermissionsBase):
+    def enable_from(self, perms):
         self.set_mapped(self._get_mapped() | perms._get_mapped())
-    
+
     def clear(self):
         '''
         Disable all permissions
         '''
         self._set_mapped(0)
-    
+
     def __int__(self):
         return self._get_mapped()
 
@@ -73,7 +73,7 @@ class BindedPermissions(PermissionsBase):
 
     def _get_mapped(self):
         return getattr(self.mapping, self.attr_name)
-    
+
     def _set_mapped(self, val):
         setattr(self.mapping, self.attr_name, val)
 
@@ -82,9 +82,9 @@ class UnbindedPermissions(PermissionsBase):
     def __init__(self, *args):
         self.mask = 0
         self.enable(*args)
-    
+
     def _get_mapped(self):
         return self.mask
-    
+
     def _set_mapped(self, val):
         self.mask = val
